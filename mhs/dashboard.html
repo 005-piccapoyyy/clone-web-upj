@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - SITA UPJ</title>
+  <link rel="stylesheet" href="dashboard.css">
+</head>
+<body>
+
+<!-- === NAVBAR ATAS === -->
+<nav class="navbar">
+  <div class="navbar-brand">
+    <div class="navbar-logo">
+      <img src="../images/logo.png" alt="Logo SITA UPJ">
+    </div>
+    <div class="navbar-title">
+      <h1>SITA UPJ</h1>
+      <p>Sistem Informasi Tugas Akhir Mahasiswa</p>
+    </div>
+  </div>
+
+  <div class="navbar-user">
+    <div class="navbar-user-info">
+      <div class="navbar-user-name">Halo, Andi Mahasiswa</div>
+      <div><span class="badge-mahasiswa">MAHASISWA</span></div>
+    </div>
+    <div class="user-avatar">A</div>
+  </div>
+</nav>
+
+<!-- === WRAPPER KONTEN (Sidebar + Main) === -->
+<div class="content-wrapper">
+
+  <!-- SIDEBAR KIRI -->
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <span class="sidebar-label">Menu Utama</span>
+    </div>
+
+    <a href="#" class="nav-item" onclick="showSection('dashboard', this); return false;">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0h6"/>
+      </svg>
+      Dashboard
+    </a>
+
+    <a href="#" class="nav-item active" onclick="showSection('pengajuan', this); return false;">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+      </svg>
+      Pengajuan Judul
+    </a>
+
+    <a href="#" class="nav-item" onclick="showSection('bimbingan', this); return false;">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+      </svg>
+      Bimbingan Saya
+    </a>
+
+    <a href="#" class="nav-item" onclick="showSection('sidang', this); return false;">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+      </svg>
+      Pendaftaran Sidang
+    </a>
+
+    <div class="sidebar-divider"></div>
+
+    <a href="../login-page/index.html" class="nav-item logout">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+      </svg>
+      Logout
+    </a>
+
+    <!-- STATUS SERVER -->
+    <div class="status-box">
+      <div><span class="status-dot"></span><strong>Status Server: Online</strong></div>
+      <div class="status-date" id="server-date"></div>
+    </div>
+  </aside>
+
+  <!-- === AREA KONTEN UTAMA === -->
+  <main class="main-content">
+
+    <!-- PANEL TENGAH -->
+    <div class="center-panel">
+
+      <!-- === SECTION: DASHBOARD === -->
+      <div id="section-dashboard" style="display: none;">
+        <div class="page-title">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0h6"/>
+          </svg>
+          <h2>Dashboard</h2>
+        </div>
+        <p class="page-subtitle">Selamat datang di SITA UPJ, Andi Mahasiswa!</p>
+
+        <div class="card">
+          <div class="card-body">
+            <div class="stats-grid">
+              <div class="stat-box blue">
+                <div class="stat-number">0</div>
+                <div class="stat-label">Pengajuan Topik</div>
+              </div>
+              <div class="stat-box green">
+                <div class="stat-number">0</div>
+                <div class="stat-label">Sesi Bimbingan</div>
+              </div>
+              <div class="stat-box amber">
+                <div class="stat-number">-</div>
+                <div class="stat-label">Jadwal Sidang</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- === SECTION: PENGAJUAN TOPIK SKRIPSI === -->
+      <div id="section-pengajuan">
+        <div class="page-title">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+          </svg>
+          <h2>Pengajuan Topik Skripsi</h2>
+        </div>
+        <p class="page-subtitle">Silakan isi formulir di bawah ini.</p>
+
+        <!-- Form Pengajuan -->
+        <div class="card">
+          <div class="card-body">
+
+            <div class="form-group">
+              <label for="input-judul">Judul Topik:</label>
+              <input type="text" id="input-judul" placeholder="Masukkan judul topik skripsi Anda">
+            </div>
+
+            <div class="form-group">
+              <label for="input-jenis">Jenis Topik:</label>
+              <select id="input-jenis">
+                <option>Skripsi</option>
+                <option>Tugas Akhir</option>
+                <option>Proyek Akhir</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="input-deskripsi">Deskripsi Singkat:</label>
+              <textarea id="input-deskripsi" placeholder="Jelaskan secara singkat topik yang Anda ajukan..."></textarea>
+            </div>
+
+            <div class="form-group">
+              <label>File Proposal (PDF):</label>
+              <div class="file-upload-area" onclick="triggerFileInput()">
+                <input type="file" id="file-input" accept=".pdf" onchange="updateFileName(this)">
+                <button type="button" class="btn-choose">Pilih File</button>
+                <span class="file-name" id="file-name-display">Belum ada file dipilih</span>
+              </div>
+            </div>
+
+            <button class="btn-submit" onclick="kirimPengajuan()">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+              </svg>
+              Kirim Pengajuan
+            </button>
+
+          </div>
+        </div>
+
+        <!-- Tabel Riwayat Pengajuan -->
+        <div class="card">
+          <div class="section-title">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            Riwayat Pengajuan
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>Judul &amp; Jenis</th>
+                <th>Tanggal</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="riwayat-tbody">
+              <tr class="empty-row">
+                <td colspan="3">Belum ada riwayat pengajuan.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- === SECTION: BIMBINGAN SAYA === -->
+      <div id="section-bimbingan" style="display: none;">
+        <div class="page-title">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+          </svg>
+          <h2>Bimbingan Saya</h2>
+        </div>
+        <p class="page-subtitle">Daftar sesi bimbingan dengan dosen pembimbing.</p>
+        <div class="card">
+          <div class="card-body empty-state">Belum ada data bimbingan.</div>
+        </div>
+      </div>
+
+      <!-- === SECTION: PENDAFTARAN SIDANG === -->
+      <div id="section-sidang" style="display: none;">
+        <div class="page-title">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+          </svg>
+          <h2>Pendaftaran Sidang</h2>
+        </div>
+        <p class="page-subtitle">Daftarkan diri untuk jadwal sidang skripsi.</p>
+        <div class="card">
+          <div class="card-body empty-state">Fitur pendaftaran sidang akan segera tersedia.</div>
+        </div>
+      </div>
+
+    </div><!-- /center-panel -->
+
+    <!-- === PANEL KANAN === -->
+    <aside class="right-panel">
+
+      <!-- Kalender Mini -->
+      <div class="calendar-card">
+        <div class="cal-day"   id="cal-day">1</div>
+        <div class="cal-month" id="cal-month">January</div>
+        <div class="cal-year"  id="cal-year">2025</div>
+      </div>
+
+      <!-- Informasi Akademik -->
+      <div class="info-card">
+        <h3>Informasi Akademik</h3>
+        <a href="#" class="info-link">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+          </svg>
+          Kalender Akademik
+        </a>
+        <a href="#" class="info-link">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+          </svg>
+          Panduan Skripsi
+        </a>
+        <a href="https://youtube.com" target="_blank" class="info-link">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          YouTube
+        </a>
+      </div>
+
+      <!-- Notifikasi -->
+      <div class="info-card">
+        <h3>Notifikasi</h3>
+        <div class="notif-item">
+          <div class="notif-dot"></div>
+          <div>Pengajuan topik skripsi dibuka s/d 31 Des 2025</div>
+        </div>
+        <div class="notif-item">
+          <div class="notif-dot blue"></div>
+          <div>Pastikan proposal sudah dalam format PDF</div>
+        </div>
+      </div>
+
+    </aside><!-- /right-panel -->
+
+  </main>
+</div><!-- /content-wrapper -->
+
+<!-- TOAST NOTIFIKASI -->
+<div id="toast">
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+  </svg>
+  <span id="toast-msg">Pengajuan berhasil dikirim!</span>
+</div>
+
+<!-- JavaScript eksternal, diletakkan di akhir body -->
+<script src="dashboard.js"></script>
+
+</body>
+</html>

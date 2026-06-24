@@ -54,5 +54,24 @@
 
 </div>
 
+<script>
+  document.querySelector('form').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const nim      = document.querySelector('input[type="text"]').value.trim();
+    const password = document.querySelector('input[type="password"]').value.trim();
+
+    if (!nim || !password) {
+      alert('NIM dan Password wajib diisi!');
+      return;
+    }
+
+    if (nim === '12345' && password === 'mahasiswa') {
+      window.location.href = '../mhs/dashboard.html';
+    } else {
+      alert('NIM atau Password salah!');
+    }
+  });
+</script>
 </body>
 </html>
