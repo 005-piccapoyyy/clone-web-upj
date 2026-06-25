@@ -7,7 +7,6 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
 <!-- KONTEN UTAMA LATAR BELAKANG -->
 <div class="login-wrapper">
     
@@ -30,7 +29,7 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
               </svg>
             </span>
-            <input type="text" placeholder="NIM / NIDN" required>
+            <input type="text" id="input-nim" placeholder="NIM / NIDN" required>
           </div>
 
           <!-- 2. Input Password dengan Ikon Gembok (Lock) -->
@@ -41,7 +40,21 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
               </svg>
             </span>
-            <input type="password" placeholder="Password" required>
+            <input type="password" id="input-password" placeholder="Password" required>
+          </div>
+
+          <!-- Pesan Error -->
+          <div id="error-msg" style="
+            display: none;
+            background: #fef2f2;
+            color: #b91c1c;
+            border: 1px solid #fecaca;
+            border-radius: 6px;
+            padding: 9px 13px;
+            font-size: 13px;
+            margin-bottom: 12px;
+          ">
+            NIM/NIDN atau Password salah. Silakan coba lagi.
           </div>
 
           <button type="submit" class="btn-login">LOGIN MASUK</button>
@@ -58,18 +71,33 @@
   document.querySelector('form').addEventListener('submit', function(e) {
     e.preventDefault();
 
-    const nim      = document.querySelector('input[type="text"]').value.trim();
-    const password = document.querySelector('input[type="password"]').value.trim();
+    const nim      = document.getElementById('input-nim').value.trim();
+    const password = document.getElementById('input-password').value.trim();
+    const errorMsg = document.getElementById('error-msg');
+
+    // Sembunyikan error dulu
+    errorMsg.style.display = 'none';
 
     if (!nim || !password) {
-      alert('NIM dan Password wajib diisi!');
+      errorMsg.textContent = 'NIM/NIDN dan Password wajib diisi!';
+      errorMsg.style.display = 'block';
       return;
     }
 
+    // Login Mahasiswa
     if (nim === '12345' && password === 'mahasiswa') {
       window.location.href = '../mhs/dashboard.html';
+
+    // Login Dosen Pembimbing
+    } else if (nim === '11111' && password === 'dosen') {
+      window.location.href = '../dosen/dashboard.html';
+
+    // Salah
     } else {
-      alert('NIM atau Password salah!');
+      errorMsg.textContent = 'NIM/NIDN atau Password salah. Silakan coba lagi.';
+      errorMsg.style.display = 'block';
+      document.getElementById('input-password').value = '';
+      document.getElementById('input-password').focus();
     }
   });
 </script>
