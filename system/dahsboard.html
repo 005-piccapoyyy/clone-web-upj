@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel Admin - SITA UPJ</title>
+  <link rel="stylesheet" href="/system/dashboard.css">
+</head>
+<body>
+
+<!-- === NAVBAR ATAS === -->
+<nav class="navbar">
+  <div class="navbar-brand">
+    <div class="navbar-logo">
+      <img src="../images/logo.png" alt="Logo SITA UPJ" onerror="this.style.display='none';this.parentElement.innerHTML='<svg viewBox=\'0 0 44 44\' style=\'width:32px;height:32px\'><circle cx=\'22\' cy=\'22\' r=\'20\' fill=\'#1a458b\'/><text x=\'22\' y=\'27\' text-anchor=\'middle\' fill=\'white\' font-size=\'12\' font-weight=\'bold\'>UPJ</text></svg>'">
+    </div>
+    <div class="navbar-title">
+      <h1>SITA UPJ - Panel Admin</h1>
+      <p>Sistem Informasi Tugas Akhir Mahasiswa</p>
+      <p>Jl. Cendrawasih Raya Blok B7/P, Sawah Baru, Kec. Ciputat, Kota Tangerang Selatan</p>
+    </div>
+  </div>
+
+  <div class="navbar-user">
+    <div class="navbar-user-info">
+      <div class="navbar-user-name">Halo, Koordinator TA</div>
+      <div><span class="badge-koordinator">KOORDINATOR</span></div>
+    </div>
+    <div class="user-avatar">K</div>
+  </div>
+</nav>
+
+<!-- === WRAPPER KONTEN === -->
+<div class="content-wrapper">
+
+  <!-- SIDEBAR KIRI -->
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <span class="sidebar-label">Menu Admin</span>
+    </div>
+
+    <a href="#" class="nav-item" onclick="showSection('dashboard', this); return false;">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0h6"/>
+      </svg>
+      Dashboard Utama
+    </a>
+
+    <a href="#" class="nav-item" onclick="showSection('kelola', this); return false;">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+      </svg>
+      Kelola User &amp; PA
+    </a>
+
+    <a href="#" class="nav-item active" onclick="showSection('validasi', this); return false;">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+      </svg>
+      Validasi Proposal
+    </a>
+
+    <a href="#" class="nav-item" onclick="showSection('jadwal', this); return false;">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+      </svg>
+      Jadwal Sidang
+    </a>
+
+    <a href="#" class="nav-item" onclick="showSection('laporan', this); return false;">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+      </svg>
+      Laporan Lulusan
+    </a>
+
+    <a href="#" class="nav-item" onclick="showSection('pengaturan', this); return false;">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+      </svg>
+      Pengaturan Web
+    </a>
+
+    <div class="sidebar-divider"></div>
+
+    <a href="../login-page/index.html" class="nav-item logout"">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+      </svg>
+      Logout
+    </a>
+
+    <div class="status-box">
+      <div><span class="status-dot"></span><strong>Status Server: Online</strong></div>
+      <div class="status-date" id="server-date"></div>
+    </div>
+  </aside>
+
+  <!-- === AREA KONTEN UTAMA === -->
+  <main class="main-content">
+
+    <div class="center-panel">
+
+      <!-- ===== SECTION: DASHBOARD ===== -->
+      <div id="section-dashboard" style="display:none;">
+        <div class="page-title">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0h6"/>
+          </svg>
+          <h2>Dashboard Utama</h2>
+        </div>
+        <p class="page-subtitle">Ringkasan aktivitas sistem SITA UPJ.</p>
+        <div class="card">
+          <div class="card-body">
+            <div class="stats-grid">
+              <div class="stat-box blue">
+                <div class="stat-number">128</div>
+                <div class="stat-label">Total Mahasiswa</div>
+              </div>
+              <div class="stat-box amber">
+                <div class="stat-number" id="stat-pending">1</div>
+                <div class="stat-label">Menunggu Validasi</div>
+              </div>
+              <div class="stat-box green">
+                <div class="stat-number" id="stat-approved">0</div>
+                <div class="stat-label">Disetujui</div>
+              </div>
+              <div class="stat-box red">
+                <div class="stat-number" id="stat-rejected">0</div>
+                <div class="stat-label">Ditolak</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="section-title">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            Aktivitas Terbaru
+          </div>
+          <div class="card-body empty-state" id="dashboard-activity">
+            Belum ada aktivitas validasi.
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== SECTION: KELOLA USER ===== -->
+      <div id="section-kelola" style="display:none;">
+        <div class="page-title">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+          </svg>
+          <h2>Kelola User &amp; PA</h2>
+        </div>
+        <p class="page-subtitle">Daftar pengguna yang terdaftar di sistem.</p>
+        <div class="card">
+          <div class="section-title">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+            </svg>
+            Daftar Pengguna
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>Nama</th>
+                <th>Role</th>
+                <th>Email</th>
+                <th>Aksi</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Koordinator TA</strong></td>
+                <td><span class="badge-status" style="background:#dbeafe;color:#1e3a8a;">Koordinator</span></td>
+                <td>koordinator@upj.ac.id</td>
+                <td><button class="btn-action-sm btn-edit">Edit</button></td>
+              </tr>
+              <tr>
+                <td><strong>Dr. Agus Setiawan</strong></td>
+                <td><span class="badge-status" style="background:#d1fae5;color:#065f46;">Dosen PA</span></td>
+                <td>agus@upj.ac.id</td>
+                <td><button class="btn-action-sm btn-edit">Edit</button></td>
+              </tr>
+              <tr>
+                <td><strong>Dr. Budi Santoso</strong></td>
+                <td><span class="badge-status" style="background:#d1fae5;color:#065f46;">Dosen PA</span></td>
+                <td>budi@upj.ac.id</td>
+                <td><button class="btn-action-sm btn-edit">Edit</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ===== SECTION: VALIDASI PROPOSAL ===== -->
+      <div id="section-validasi">
+        <div class="page-title">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          <h2>Validasi &amp; Plotting Proposal</h2>
+        </div>
+        <p class="page-subtitle">Kelola pengajuan proposal masuk dari mahasiswa.</p>
+
+        <!-- TAB -->
+        <div class="tab-bar">
+          <button class="tab-btn active" onclick="switchTab('proposal-baru', this)">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="15" height="15">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+            </svg>
+            Proposal Baru
+          </button>
+          <button class="tab-btn" onclick="switchTab('riwayat-validasi', this)">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="15" height="15">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            Riwayat Validasi
+          </button>
+          <button class="tab-btn" onclick="switchTab('plotting', this)">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="15" height="15">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+            </svg>
+            Plotting Pembimbing
+          </button>
+        </div>
+
+        <!-- TAB: Proposal Baru -->
+        <div class="tab-content active" id="tab-proposal-baru">
+          <div class="card">
+            <div class="section-title">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+              </svg>
+              Daftar Pengajuan Masuk (Perlu Validasi)
+            </div>
+            <table>
+              <thead>
+                <tr>
+                  <th>Mahasiswa</th>
+                  <th>Judul Topik &amp; Proposal</th>
+                  <th>File</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="proposal-tbody">
+                <tr>
+                  <td>
+                    <div style="font-weight:600;color:#1e293b;">Gilang</div>
+                    <div style="font-size:12px;color:#94a3b8;">m3p4</div>
+                    <span class="badge-status">Menunggu</span>
+                  </td>
+                  <td>
+                    <div class="judul-cell">a</div>
+                    <div class="jenis-cell">a...</div>
+                  </td>
+                  <td>
+                    <a href="#" class="file-link">
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="14" height="14">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                      </svg>
+                      Lihat File
+                    </a>
+                  </td>
+                  <td>
+                    <div class="aksi-group">
+                      <button class="btn-approve" onclick="handleValidasi(this, 'approve')">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="14" height="14">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+                        </svg>
+                        Setujui
+                      </button>
+                      <button class="btn-reject" onclick="handleValidasi(this, 'reject')">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="14" height="14">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                        Tolak
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- TAB: Riwayat Validasi -->
+        <div class="tab-content" id="tab-riwayat-validasi" style="display:none;">
+          <div class="card">
+            <div class="section-title">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+              Riwayat Validasi
+            </div>
+            <table>
+              <thead>
+                <tr><th>Mahasiswa</th><th>Judul &amp; Jenis</th><th>Tanggal</th><th>Status</th></tr>
+              </thead>
+              <tbody id="riwayat-tbody">
+                <tr class="empty-row"><td colspan="4">Belum ada riwayat validasi.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- TAB: Plotting Pembimbing -->
+        <div class="tab-content" id="tab-plotting" style="display:none;">
+          <div class="card">
+            <div class="section-title">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+              </svg>
+              Plotting Dosen Pembimbing
+            </div>
+            <table>
+              <thead>
+                <tr><th>Mahasiswa</th><th>Judul Proposal</th><th>Pembimbing 1</th><th>Pembimbing 2</th><th>Aksi</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                    <div style="font-weight:600;color:#1e293b;">Ahmad Rizal</div>
+                    <div style="font-size:12px;color:#94a3b8;">m3p3</div>
+                  </td>
+                  <td>Sistem Monitoring IoT...</td>
+                  <td>
+                    <select class="form-select-sm">
+                      <option>-- Pilih Dosen --</option>
+                      <option>Dr. Agus Setiawan</option>
+                      <option>Dr. Budi Santoso</option>
+                    </select>
+                  </td>
+                  <td>
+                    <select class="form-select-sm">
+                      <option>-- Pilih Dosen --</option>
+                      <option>Dr. Citra Dewi</option>
+                      <option>Dr. Dian Pratama</option>
+                    </select>
+                  </td>
+                  <td>
+                    <button class="btn-save-plot" onclick="showToast('Data pembimbing disimpan!', true)">Simpan</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== SECTION: JADWAL SIDANG ===== -->
+      <div id="section-jadwal" style="display:none;">
+        <div class="page-title">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+          </svg>
+          <h2>Jadwal Sidang</h2>
+        </div>
+        <p class="page-subtitle">Kelola jadwal sidang skripsi mahasiswa.</p>
+        <div class="card"><div class="card-body empty-state">Belum ada jadwal sidang yang tersedia.</div></div>
+      </div>
+
+      <!-- ===== SECTION: LAPORAN ===== -->
+      <div id="section-laporan" style="display:none;">
+        <div class="page-title">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+          </svg>
+          <h2>Laporan Lulusan</h2>
+        </div>
+        <p class="page-subtitle">Data rekap mahasiswa yang telah lulus sidang.</p>
+        <div class="card"><div class="card-body empty-state">Belum ada data laporan lulusan.</div></div>
+      </div>
+
+      <!-- ===== SECTION: PENGATURAN ===== -->
+      <div id="section-pengaturan" style="display:none;">
+        <div class="page-title">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+          </svg>
+          <h2>Pengaturan Web Lengkap</h2>
+        </div>
+        <p class="page-subtitle">Konfigurasi dan pengaturan sistem.</p>
+        <div class="card"><div class="card-body empty-state">Pengaturan website akan ditampilkan di sini.</div></div>
+      </div>
+
+    </div><!-- /center-panel -->
+
+    <!-- === PANEL KANAN === -->
+    <aside class="right-panel">
+
+      <!-- Kalender Mini -->
+      <div class="calendar-card">
+        <div class="cal-day"   id="cal-day">1</div>
+        <div class="cal-month" id="cal-month">JANUARY</div>
+        <div class="cal-year"  id="cal-year">2025</div>
+      </div>
+
+      <!-- Informasi Akademik -->
+      <div class="info-card">
+        <h3>Informasi Akademik</h3>
+        <a href="#" class="info-link">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+          </svg>
+          Kalender Akademik
+        </a>
+        <a href="#" class="info-link">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+          </svg>
+          Panduan Skripsi
+        </a>
+        <a href="https://youtube.com" target="_blank" class="info-link">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          YouTube
+        </a>
+      </div>
+
+      <!-- Notifikasi -->
+      <div class="info-card">
+        <h3>Notifikasi</h3>
+        <div class="notif-item">
+          <div class="notif-dot"></div>
+          <div>1 proposal baru menunggu validasi</div>
+        </div>
+        <div class="notif-item">
+          <div class="notif-dot blue"></div>
+          <div>Jadwal sidang periode Des 2025 segera dibuka</div>
+        </div>
+      </div>
+
+    </aside>
+
+  </main>
+</div>
+
+<!-- MODAL KONFIRMASI -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal-box">
+    <div class="modal-icon" id="modal-icon"></div>
+    <h3 id="modal-title"></h3>
+    <p id="modal-desc"></p>
+    <div class="modal-actions">
+      <button class="btn-modal-cancel" onclick="closeModal()">Batal</button>
+      <button class="btn-modal-confirm" id="btn-modal-confirm">Konfirmasi</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast">
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+  </svg>
+  <span id="toast-msg">Berhasil!</span>
+</div>
+
+<script src="/system/dashboard.js"></script>
+</body>
+</html>

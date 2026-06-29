@@ -92,13 +92,17 @@
     } else if (nim === '11111' && password === 'dosen') {
       window.location.href = '../dosen/dashboard.html';
 
-    // Salah
-    } else {
+    // Login Admin
+    } else if (nim === '22222' && password === 'admin') {
+      window.location.href = '../system/Dahsboard.html';
+    }   
+    
+      else {
       errorMsg.textContent = 'NIM/NIDN atau Password salah. Silakan coba lagi.';
       errorMsg.style.display = 'block';
       document.getElementById('input-password').value = '';
       document.getElementById('input-password').focus();
-    }
+    } 
   });
 </script>
 </body>
