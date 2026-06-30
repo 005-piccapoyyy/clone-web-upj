@@ -227,6 +227,27 @@ document.addEventListener('keydown', function (e) {
   if (e.key === 'Escape') closeModal();
 });
 
+// === LOGOUT ===
+const tombolLogout = document.getElementById('btn-logout');
+  if (tombolLogout) {
+    tombolLogout.addEventListener('click', function (e) {
+      e.preventDefault(); // Mengunci tag a href agar tidak lompat liar
+      handleLogout();     // Jalankan fungsi logout khusus dosen
+    });
+  }
+;
+
+// === FUNGSI LOGOUT DOSEN ===
+function handleLogout() {
+  if (confirm('Apakah Anda yakin ingin logout dari akun Dosen?')) {
+    // Bersihkan sesi login dosen di browser
+    localStorage.clear();
+    
+    // Tendang kembali ke halaman login utama (sesuaikan path foldermu)
+    window.location.href = '../login-page/index.html'; 
+  }
+}
+
 // ═══════════════════════════════════════
 //  UTILITAS
 // ═══════════════════════════════════════

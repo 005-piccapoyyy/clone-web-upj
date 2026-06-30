@@ -1,6 +1,22 @@
 // === DATA ===
 
-/** Menyimpan riwayat pengajuan selama sesi berlangsung */
+/** NIM contoh Andi yang sudah terdaftar di database */
+// === CEK SESI & PROTEKSI HALAMAN ===
+const nimMahasiswa = localStorage.getItem('nim_nidn');
+const namaUser = localStorage.getItem('nama');
+const roleUser = localStorage.getItem('role');
+
+// Jika tidak ada data login atau role-nya bukan mahasiswa, tendang ke halaman login
+if (!nimMahasiswa || roleUser !== 'mahasiswa') {
+    alert("Anda belum login! Silakan login terlebih dahulu.");
+    window.location.href = '../login.html'; // Sesuaikan arah jalan ke folder login-mu
+}
+
+// === DATA ===
+/** Menyimpan riwayat pengajuan dari database */
+// ... (sisa kode SECTIONS dan MONTHS di bawahnya tetap sama)
+
+/** Menyimpan riwayat pengajuan dari database */
 let riwayat = [];
 
 /** Daftar nama section yang tersedia */
@@ -18,14 +34,13 @@ const MONTHS = [
 document.addEventListener('DOMContentLoaded', function () {
   updateDate();
   showSection('pengajuan', document.querySelector('.nav-item.active'));
+  
+  // KONEKSI BARU: Ambil riwayat dari MySQL saat halaman terbuka
+  loadRiwayatData(nimMahasiswa);
 });
 
 // === KALENDER & TANGGAL ===
 
-/**
- * Mengambil tanggal hari ini dan menampilkannya
- * di kalender mini serta status server.
- */
 function updateDate() {
   const now = new Date();
 
@@ -40,13 +55,7 @@ function updateDate() {
 
 // === NAVIGASI SIDEBAR ===
 
-/**
- * Menampilkan section yang dipilih dan menyembunyikan yang lain.
- * @param {string} name  - ID section (tanpa prefix 'section-')
- * @param {Element} el   - Elemen nav-item yang diklik
- */
 function showSection(name, el) {
-  // Tampilkan/sembunyikan section
   SECTIONS.forEach(function (s) {
     const sec = document.getElementById('section-' + s);
     if (sec) {
@@ -54,7 +63,6 @@ function showSection(name, el) {
     }
   });
 
-  // Update kelas active pada sidebar
   document.querySelectorAll('.nav-item').forEach(function (item) {
     item.classList.remove('active');
   });
@@ -63,19 +71,14 @@ function showSection(name, el) {
   }
 }
 
+
+
 // === FILE UPLOAD ===
 
-/**
- * Membuka dialog pilih file saat area upload diklik.
- */
 function triggerFileInput() {
   document.getElementById('file-input').click();
 }
 
-/**
- * Memperbarui tampilan nama file setelah pengguna memilih file.
- * @param {HTMLInputElement} input - Elemen input file
- */
 function updateFileName(input) {
   const label = document.getElementById('file-name-display');
 
@@ -88,61 +91,106 @@ function updateFileName(input) {
   }
 }
 
-// === PENGAJUAN TOPIK ===
+// === AMBIL DATA RIWAYAT DARI DATABASE (BARU) ===
 
 /**
- * Memvalidasi form, menyimpan data pengajuan ke array riwayat,
- * mereset form, lalu menampilkan notifikasi sukses.
+ * Mengambil data pengajuan khusus milik NIM mahasiswa dari MySQL
+ * dan memasukkannya ke dalam array `riwayat`.
  */
-function kirimPengajuan() {
+async function loadRiwayatData(nim) {
+  const tbody = document.getElementById('riwayat-tbody');
+  if (!tbody) return;
+
+  try {
+    const response = await fetch(`http://localhost:3000/api/pengajuan/${nim}`);
+    const data = await response.json();
+    
+    // Pindahkan data dari server ke array riwayat global
+    riwayat = data;
+    
+    // Render ke tabel HTML
+    renderRiwayat();
+  } catch (error) {
+    console.error("Gagal memuat riwayat:", error);
+    tbody.innerHTML = `
+      <tr class="empty-row">
+        <td colspan="3" style="color: #991b1b;">Gagal memuat riwayat dari server.</td>
+      </tr>`;
+  }
+}
+
+// === PENGAJUAN TOPIK (DIUBAH KE ASYNC FETCH) ===
+
+/**
+ * Memvalidasi form, mengirimkan data fisik file PDF & teks ke backend Node.js,
+ * mereset form, lalu memperbarui tabel secara real-time.
+ */
+async function kirimPengajuan() {
   const judulInput    = document.getElementById('input-judul');
   const jenisInput    = document.getElementById('input-jenis');
   const deskripsiInput = document.getElementById('input-deskripsi');
   const fileInput     = document.getElementById('file-input');
 
-  const judul    = judulInput.value.trim();
-  const jenis    = jenisInput.value;
+  const judul     = judulInput.value.trim();
+  const jenis     = jenisInput.value;
+  const deskripsi = deskripsiInput.value.trim();
+  const fileProposal = fileInput.files[0];
 
-  // Validasi: judul wajib diisi
+  // Validasi wajib isi
   if (!judul) {
     showToast('Judul topik wajib diisi!', false);
     judulInput.focus();
     return;
   }
+  if (!fileProposal) {
+    showToast('File Proposal PDF wajib diunggah!', false);
+    return;
+  }
 
-  // Format tanggal DD/MM/YYYY
-  const now    = new Date();
-  const dd     = String(now.getDate()).padStart(2, '0');
-  const mm     = String(now.getMonth() + 1).padStart(2, '0');
-  const yyyy   = now.getFullYear();
-  const tanggal = `${dd}/${mm}/${yyyy}`;
+  // Bungkus data menggunakan FormData karena ada file fisik (PDF)
+  const formData = new FormData();
+  formData.append('nim_mahasiswa', nimMahasiswa);
+  formData.append('judul', judul);
+  formData.append('jenis', jenis);
+  formData.append('deskripsi', deskripsi);
+  formData.append('file_proposal', fileProposal);
 
-  // Simpan ke array riwayat (terbaru di atas)
-  riwayat.unshift({
-    judul   : judul,
-    jenis   : jenis,
-    tanggal : tanggal,
-    status  : 'Menunggu Review'
-  });
+  try {
+    // Tembak data ke backend Node.js
+    const response = await fetch('http://localhost:3000/api/pengajuan', {
+      method: 'POST',
+      body: formData
+    });
 
-  // Render ulang tabel
-  renderRiwayat();
+    const hasil = await response.json();
 
-  // Reset semua field form
-  judulInput.value      = '';
-  deskripsiInput.value  = '';
-  fileInput.value       = '';
-  document.getElementById('file-name-display').textContent = 'Belum ada file dipilih';
-  document.getElementById('file-name-display').style.color = '#94a3b8';
+    if (hasil.status === 'sukses') {
+      showToast('Pengajuan berhasil dikirim!', true);
 
-  showToast('Pengajuan berhasil dikirim!', true);
+      // Reset semua field form bawaan
+      judulInput.value      = '';
+      deskripsiInput.value  = '';
+      fileInput.value       = '';
+      document.getElementById('file-name-display').textContent = 'Belum ada file dipilih';
+      document.getElementById('file-name-display').style.color = '#94a3b8';
+
+      // Tarik data terbaru dari database agar langsung muncul di tabel riwayat
+      loadRiwayatData(nimMahasiswa);
+    } else {
+      showToast('Gagal mengirim: ' + hasil.error, false);
+    }
+
+  } catch (error) {
+    console.error("Error saat mengirim:", error);
+    showToast('Terjadi kesalahan koneksi ke server backend!', false);
+  }
 }
 
 // === RENDER TABEL RIWAYAT ===
 
 /**
- * Merender ulang isi tabel riwayat pengajuan
- * berdasarkan data di array `riwayat`.
+ * Merender isi tabel riwayat pengajuan berdasarkan array `riwayat`
+ * yang datanya sudah ditarik dari database MySQL.
  */
 function renderRiwayat() {
   const tbody = document.getElementById('riwayat-tbody');
@@ -156,15 +204,33 @@ function renderRiwayat() {
   }
 
   tbody.innerHTML = riwayat.map(function (r) {
+    // Mengubah string tanggal dari MySQL (ISO Format) menjadi format tanggal lokal Indonesia
+    const tanggalLokal = new Date(r.created_at).toLocaleDateString('id-ID');
+
+    // Menentukan teks & warna styling badge secara dinamis berdasarkan status MySQL
+    let badgeStyle = '';
+    let statusText = '';
+    
+    if (r.status === 'pending') {
+      badgeStyle = 'background: #fef3c7; color: #d97706; padding: 3px 8px; border-radius: 4px; font-weight: bold; font-size: 11px;';
+      statusText = 'Menunggu Review';
+    } else if (r.status === 'disetujui') {
+      badgeStyle = 'background: #d1fae5; color: #065f46; padding: 3px 8px; border-radius: 4px; font-weight: bold; font-size: 11px;';
+      statusText = 'Disetujui';
+    } else {
+      badgeStyle = 'background: #fee2e2; color: #991b1b; padding: 3px 8px; border-radius: 4px; font-weight: bold; font-size: 11px;';
+      statusText = 'Ditolak';
+    }
+
     return `
       <tr>
         <td>
           <div class="judul-cell">${escapeHtml(r.judul)}</div>
           <div class="jenis-cell">${escapeHtml(r.jenis)}</div>
         </td>
-        <td>${r.tanggal}</td>
+        <td>${tanggalLokal}</td>
         <td>
-          <span class="badge-status">${r.status}</span>
+          <span class="badge-status" style="${badgeStyle}">${statusText}</span>
         </td>
       </tr>`;
   }).join('');
@@ -174,14 +240,8 @@ function renderRiwayat() {
 //  TOAST NOTIFIKASI
 // ============================================
 
-/** Timeout ID untuk auto-hide toast */
 let toastTimer = null;
 
-/**
- * Menampilkan notifikasi toast di pojok kanan bawah.
- * @param {string}  msg     - Pesan yang ditampilkan
- * @param {boolean} success - true = hijau (sukses), false = merah (error)
- */
 function showToast(msg, success) {
   const toast = document.getElementById('toast');
   document.getElementById('toast-msg').textContent = msg;
@@ -189,7 +249,6 @@ function showToast(msg, success) {
   toast.style.background = success ? '#166534' : '#991b1b';
   toast.classList.add('show');
 
-  // Reset timer jika toast sebelumnya belum hilang
   if (toastTimer) {
     clearTimeout(toastTimer);
   }
@@ -201,12 +260,6 @@ function showToast(msg, success) {
 
 // === UTILITAS ===
 
-/**
- * Mencegah XSS dengan meng-escape karakter HTML berbahaya
- * sebelum dimasukkan ke innerHTML.
- * @param {string} str
- * @returns {string}
- */
 function escapeHtml(str) {
   return str
     .replace(/&/g,  '&amp;')
@@ -214,4 +267,33 @@ function escapeHtml(str) {
     .replace(/>/g,  '&gt;')
     .replace(/"/g,  '&quot;')
     .replace(/'/g,  '&#039;');
+}
+
+// === LOGOUT ===
+
+// === INIT ===
+document.addEventListener('DOMContentLoaded', function () {
+  updateDate();
+
+  if (typeof loadRiwayatData === 'function') {
+      loadRiwayatData(nimMahasiswa);
+  }
+
+  const tombolLogout = document.getElementById('btn-logout');
+  if (tombolLogout) {
+      tombolLogout.addEventListener('click', function (e) {
+          e.preventDefault(); 
+          handleLogout();     
+      });
+  }
+});
+
+function handleLogout() {
+    if (confirm('Apakah Anda yakin ingin logout?')) {
+        // 1. Hapus bersih data Andi / Admin yang tersimpan di browser
+        localStorage.clear();
+        
+        // 2. Lempar kembali ke halaman login utama
+        window.location.href = '../login-page/index.html'; // Sesuaikan path menuju file login.html kamu
+    }
 }
