@@ -1,3 +1,7 @@
+// ═══════════════════════════════════════
+//  SITA UPJ — dashboard.js (Admin)
+// ═══════════════════════════════════════
+
 // === DATA ===
 const SECTIONS = ['dashboard', 'kelola', 'validasi', 'jadwal', 'laporan', 'pengaturan'];
 const MONTHS   = ['January','February','March','April','May','June',
@@ -6,26 +10,61 @@ const MONTHS   = ['January','February','March','April','May','June',
 let riwayatValidasi = [];
 let statApproved    = 0;
 let statRejected    = 0;
-let statPending     = 0; // Mulai dari 0, dihitung dinamis dari database
+let statPending     = 0; 
 let pendingRow      = null;
 let pendingType     = null;
 let toastTimer      = null;
 
-// === INIT ===
+// === INIT (SUDAH DISATUKAN DAN RAPI) ===
 document.addEventListener('DOMContentLoaded', function () {
   updateDate();
   showSection('validasi', document.querySelector('.nav-item.active'));
 
-  // KONEKSI BARU: Otomatis ambil data proposal asli dari MySQL saat panel dibuka
+  // Otomatis ambil data proposal asli dari MySQL saat panel dibuka
   loadProposalsFromDatabase();
 
+  const namaDariStorage = localStorage.getItem('nama');
+  
+  // Mencari berdasarkan class atau ID yang umum digunakan
+  const elNama = document.querySelector('.navbar-user-name') || document.getElementById('admin-name');
+  const elAvatar = document.querySelector('.user-avatar') || document.getElementById('admin-avatar');
+
+  console.log("=== DEBUG ADMIN ===");
+  console.log("Nama dari Storage:", namaDariStorage);
+  console.log("Elemen Nama Ditemukan:", elNama);
+  console.log("Elemen Avatar Ditemukan:", elAvatar);
+
+  if (elNama && namaDariStorage) {
+    elNama.textContent = `Halo, ${namaDariStorage}`;
+  }
+  
+  if (elAvatar && namaDariStorage) {
+    elAvatar.textContent = namaDariStorage.charAt(0).toUpperCase();
+  }
+  // ════════════════════════════════════════════════════════════
+
   // Tutup modal saat klik overlay
-  document.getElementById('modal-overlay').addEventListener('click', function (e) {
-    if (e.target === this) closeModal();
-  });
+  const modalOverlay = document.getElementById('modal-overlay');
+  if (modalOverlay) {
+    modalOverlay.addEventListener('click', function (e) {
+      if (e.target === this) closeModal();
+    });
+  }
 
   // Tombol konfirmasi modal
-  document.getElementById('btn-modal-confirm').addEventListener('click', confirmValidasi);
+  const btnConfirm = document.getElementById('btn-modal-confirm');
+  if (btnConfirm) {
+    btnConfirm.addEventListener('click', confirmValidasi);
+  }
+
+  // Tombol Logout Admin
+  const tombolLogout = document.getElementById('btn-logout');
+  if (tombolLogout) {
+    tombolLogout.addEventListener('click', function (e) {
+      e.preventDefault(); 
+      handleLogout();     
+    });
+  }
 });
 
 // === KALENDER & TANGGAL ===
@@ -74,19 +113,13 @@ function switchTab(name, btn) {
   btn.classList.add('active');
 }
 
-// === AMBIL DATA PROPOSAL DARI DATABASE (BARU) ===
-/**
- * Menarik seluruh data pengajuan proposal dari MySQL.
- * Memisahkan item pending ke tabel validasi utama, memisahkan sisanya ke riwayat,
- * serta menghitung counter statistik secara otomatis.
- */
+// === AMBIL DATA PROPOSAL DARI DATABASE ===
 async function loadProposalsFromDatabase() {
-  const tabelProposalBody = document.getElementById('tabel-proposal'); // Wadah tabel pengajuan aktif
+  const tabelProposalBody = document.getElementById('tabel-proposal'); 
   if (!tabelProposalBody) return;
 
   tabelProposalBody.innerHTML = `<tr><td colspan="4" style="text-align:center;padding:15px;">Memuat data proposal...</td></tr>`;
 
-  // Reset counters & riwayat sebelum diisi ulang dari database
   statApproved = 0;
   statRejected = 0;
   statPending = 0;
@@ -96,7 +129,7 @@ async function loadProposalsFromDatabase() {
     const response = await fetch('http://localhost:3000/api/admin/pengajuan');
     const data = await response.json();
 
-    tabelProposalBody.innerHTML = ''; // Bersihkan teks loading
+    tabelProposalBody.innerHTML = ''; 
 
     if (data.length === 0) {
       tabelProposalBody.innerHTML = `<tr><td colspan="4" style="text-align:center;padding:15px;color:#94a3b8;">Belum ada proposal masuk dari mahasiswa.</td></tr>`;
@@ -106,14 +139,11 @@ async function loadProposalsFromDatabase() {
     }
 
     data.forEach(item => {
-      // Format tanggal buatan MySQL ke format ramah baca
       const tglFormat = new Date(item.created_at).toLocaleDateString('id-ID');
 
       if (item.status === 'pending') {
         statPending++;
         
-        // Buat baris tabel baru untuk proposal yang butuh divalidasi
-        // Menyimpan id database pada atribut data-id di tag <tr>
         const row = document.createElement('tr');
         row.setAttribute('data-id', item.id);
         row.innerHTML = `
@@ -133,32 +163,39 @@ async function loadProposalsFromDatabase() {
               : '<span style="color: #9ca3af; font-size:13px;">Tidak ada file</span>'}
           </td>
           <td>
-            <button class="btn-approve" onclick="handleValidasi(this, 'approve')" style="background: #22c55e; color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; margin-right: 4px; font-weight:600; font-size:12px;">✓ Setujui</button>
+            <button class="btn-approve" onclick="handleValidasi(this, 'approve')" style="background: #22c55e; color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; margin-right: 4px; font-weight:600; font-size:12px;">✓ Teruskan</button>
             <button class="btn-reject" onclick="handleValidasi(this, 'reject')" style="background: #ef4444; color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; font-weight:600; font-size:12px;">✕ Tolak</button>
           </td>
         `;
         tabelProposalBody.appendChild(row);
 
       } else {
-        // Jika statusnya 'disetujui' atau 'ditolak', masukkan ke array riwayat
-        if (item.status === 'disetujui') statApproved++;
-        if (item.status === 'ditolak') statRejected++;
+        // PERBARUAN LOGIKA STATUS UNTUK RIWAYAT ADMIN
+        let teksStatusRiwayat = '';
+        if (item.status === 'disetujui') {
+          statApproved++;
+          teksStatusRiwayat = 'Disetujui';
+        } else if (item.status === 'diteruskan') {
+          teksStatusRiwayat = 'Diteruskan'; // Status baru di tabel admin
+        } else {
+          statRejected++;
+          teksStatusRiwayat = 'Ditolak';
+        }
 
         riwayatValidasi.push({
           nama: item.nama,
           judul: item.judul,
           jenis: item.jenis,
           tanggal: tglFormat,
-          status: item.status === 'disetujui' ? 'Disetujui' : 'Ditolak'
+          status: teksStatusRiwayat
         });
       }
     });
 
     if (statPending === 0) {
-      tabelProposalBody.innerHTML = `<tr><td colspan="4" style="text-align:center;padding:15px;color:#94a3b8;">Semua proposal proposal telah selesai diproses.</td></tr>`;
+      tabelProposalBody.innerHTML = `<tr><td colspan="4" style="text-align:center;padding:15px;color:#94a3b8;">Semua proposal telah selesai diproses.</td></tr>`;
     }
 
-    // Perbarui komponen visual riwayat & angka box statistik
     renderRiwayat();
     updateStats();
 
@@ -185,14 +222,14 @@ function handleValidasi(btn, type) {
 
   if (type === 'approve') {
     icon.innerHTML         = '<span style="color:#22c55e;font-size:44px;">✓</span>';
-    title.textContent      = 'Setujui Proposal';
-    desc.textContent       = `Setujui proposal "${judul}" dari ${nama}?`;
+    title.textContent      = 'Teruskan ke Dosen';
+    desc.textContent       = `Teruskan proposal "${judul}" dari ${nama} ke Dosen Pembimbing?`;
     confirmBtn.style.background = '#22c55e';
-    confirmBtn.textContent = 'Ya, Setujui';
+    confirmBtn.textContent = 'Ya, Teruskan';
   } else {
     icon.innerHTML         = '<span style="color:#ef4444;font-size:44px;">✕</span>';
     title.textContent      = 'Tolak Proposal';
-    desc.textContent       = `Tolak proposal "${judul}" dari ${nama}?`;
+    desc.textContent       = `Tolak secara final proposal "${judul}" dari ${nama}?`;
     confirmBtn.style.background = '#ef4444';
     confirmBtn.textContent = 'Ya, Tolak';
   }
@@ -200,22 +237,19 @@ function handleValidasi(btn, type) {
   overlay.classList.add('show');
 }
 
-// === KONFIRMASI DARI MODAL (DIUBAH KE ASYNC FETCH PUT) ===
+// === KONFIRMASI DARI MODAL ===
 async function confirmValidasi() {
   if (!pendingRow) return;
 
-  // Menculik id proposal asli di MySQL dari data-attribute baris tabel
   const idPengajuan = pendingRow.getAttribute('data-id');
   const statusBaru  = pendingType === 'approve' ? 'disetujui' : 'ditolak';
 
   const nama   = pendingRow.querySelector('td:first-child div:first-child')?.textContent || '-';
   const judul  = pendingRow.querySelector('.judul-cell')?.textContent || '-';
-  const jenis  = pendingRow.querySelector('.jenis-cell')?.textContent || '-';
   const now    = new Date();
   const tgl    = `${String(now.getDate()).padStart(2,'0')}/${String(now.getMonth()+1).padStart(2,'0')}/${now.getFullYear()}`;
 
   try {
-    // Tembak perubahan status langsung menuju database melalui backend
     const response = await fetch('http://localhost:3000/api/admin/status-pengajuan', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
@@ -225,17 +259,14 @@ async function confirmValidasi() {
     const hasil = await response.json();
 
     if (hasil.status === 'sukses') {
-      // Update data log aktivitas di dashboard utama bawaan template
       updateDashboardActivity(nama, judul, pendingType, tgl);
 
       const msg = pendingType === 'approve'
-        ? `Proposal ${nama} berhasil disetujui!`
+        ? `Proposal ${nama} berhasil diteruskan ke Dosen!`
         : `Proposal ${nama} telah ditolak.`;
 
       closeModal();
       showToast(msg, pendingType === 'approve');
-      
-      // Mengambil ulang data segar dari database agar tabel & statistik sinkron sempurna
       loadProposalsFromDatabase();
     } else {
       showToast('Gagal memproses: ' + hasil.error, false);
@@ -264,7 +295,11 @@ function renderRiwayat() {
   }
 
   tbody.innerHTML = riwayatValidasi.map(function (r) {
-    const badgeClass = r.status === 'Disetujui' ? 'badge-approved' : 'badge-rejected';
+    // Penyesuaian kelas badge agar status Diteruskan berwarna biru cerah
+    let badgeClass = 'badge-approved';
+    if (r.status === 'Ditolak') badgeClass = 'badge-rejected';
+    if (r.status === 'Diteruskan') badgeClass = 'badge-berjalan'; // Warna biru pembimbing
+
     return `
       <tr>
         <td><div style="font-weight:600;color:#1e293b;">${escapeHtml(r.nama)}</div></td>
@@ -297,9 +332,9 @@ function updateDashboardActivity(nama, judul, type, tgl) {
   el.style.color     = '#475569';
   el.style.padding   = '0';
 
-  const color  = type === 'approve' ? '#065f46' : '#991b1b';
-  const label  = type === 'approve' ? 'Disetujui' : 'Ditolak';
-  const dot    = type === 'approve' ? '#22c55e' : '#ef4444';
+  const color  = type === 'approve' ? '#0369a1' : '#991b1b';
+  const label  = type === 'approve' ? 'Diteruskan ke Dosen' : 'Ditolak';
+  const dot    = type === 'approve' ? '#38bdf8' : '#ef4444';
   const newItem = `
     <div style="display:flex;gap:10px;padding:14px 20px;border-bottom:1px solid #f1f5f9;align-items:flex-start;">
       <div style="width:8px;height:8px;border-radius:50%;background:${dot};margin-top:5px;flex-shrink:0;"></div>
@@ -325,32 +360,12 @@ function showToast(msg, success) {
   }, 3000);
 }
 
-// === LOGOUT ===
-
-// === INIT ===
-document.addEventListener('DOMContentLoaded', function () {
-  updateDate();
-  
-  if (typeof loadProposalsFromDatabase === 'function') {
-      loadProposalsFromDatabase();
-  }
-
-  const tombolLogout = document.getElementById('btn-logout');
-  if (tombolLogout) {
-      tombolLogout.addEventListener('click', function (e) {
-          e.preventDefault(); 
-          handleLogout();     
-      });
-  }
-});
-
-
-// Tetap taruh di paling bawah file JS
+// === FUNGSI LOGOUT ADMIN ===
 function handleLogout() {
-    if (confirm('Apakah Anda yakin ingin logout?')) {
-        localStorage.clear();
-        window.location.href = '../login-page/index.html'; 
-    }
+  if (confirm('Apakah Anda yakin ingin logout?')) {
+    localStorage.clear();
+    window.location.href = '../login-page/index.html'; 
+  }
 }
 
 // === UTILITY ===

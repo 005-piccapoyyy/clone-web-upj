@@ -97,6 +97,7 @@ function updateFileName(input) {
  * Mengambil data pengajuan khusus milik NIM mahasiswa dari MySQL
  * dan memasukkannya ke dalam array `riwayat`.
  */
+// === AMBIL DATA RIWAYAT DARI DATABASE ===
 async function loadRiwayatData(nim) {
   const tbody = document.getElementById('riwayat-tbody');
   if (!tbody) return;
@@ -119,6 +120,52 @@ async function loadRiwayatData(nim) {
   }
 }
 
+// === RENDER TABEL RIWAYAT ===
+function renderRiwayat() {
+  const tbody = document.getElementById('riwayat-tbody');
+  if (!tbody) return;
+
+  if (riwayat.length === 0) {
+    tbody.innerHTML = `
+      <tr class="empty-row">
+        <td colspan="3">Belum ada riwayat pengajuan.</td>
+      </tr>`;
+    return;
+  }
+
+  tbody.innerHTML = riwayat.map(function (r) {
+    const tanggalLokal = new Date(r.created_at).toLocaleDateString('id-ID');
+
+    let badgeStyle = '';
+    let statusText = '';
+    
+    if (r.status === 'pending') {
+      badgeStyle = 'background: #fef3c7; color: #d97706; padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 11px; display: inline-block;';
+      statusText = 'Menunggu Review Admin';
+    } else if (r.status === 'diteruskan') {
+      badgeStyle = 'background: #e0f2fe; color: #0369a1; padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 11px; display: inline-block;';
+      statusText = 'Menunggu Review Dosen';
+    } else if (r.status === 'disetujui') {
+      badgeStyle = 'background: #d1fae5; color: #065f46; padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 11px; display: inline-block;';
+      statusText = 'Disetujui';
+    } else {
+      badgeStyle = 'background: #fee2e2; color: #991b1b; padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 11px; display: inline-block;';
+      statusText = 'Ditolak';
+    }
+
+    return `
+      <tr>
+        <td>
+          <div class="judul-cell">${escapeHtml(r.judul)}</div>
+          <div class="jenis-cell">${escapeHtml(r.jenis)}</div>
+        </td>
+        <td>${tanggalLokal}</td>
+        <td>
+          <span class="badge-status" style="${badgeStyle}">${statusText}</span>
+        </td>
+      </tr>`;
+  }).join('');
+}
 // === PENGAJUAN TOPIK (DIUBAH KE ASYNC FETCH) ===
 
 /**
@@ -279,6 +326,23 @@ document.addEventListener('DOMContentLoaded', function () {
       loadRiwayatData(nimMahasiswa);
   }
 
+  // ════════════════════════════════════════════════════════════
+  //  BARU: SINKRONISASI NAMA & AVATAR MAHASISWA DARI MYSQL
+  // ════════════════════════════════════════════════════════════
+  const elNama = document.querySelector('.navbar-user-name');
+  const elAvatar = document.querySelector('.user-avatar');
+
+  // Jika elemennya ada di HTML dan data nama hasil login tersimpan di memori browser
+  if (elNama && namaUser) {
+    elNama.textContent = `Halo, ${namaUser}`; // Mengganti tulisan "Halo, andi" menjadi nama asli
+  }
+  
+  if (elAvatar && namaUser) {
+    elAvatar.textContent = namaUser.charAt(0).toUpperCase(); // Mengganti "A" dengan inisial nama asli
+  }
+  // ════════════════════════════════════════════════════════════
+
+  // Tombol logout bawaanmu (tetap utuh di paling bawah)
   const tombolLogout = document.getElementById('btn-logout');
   if (tombolLogout) {
       tombolLogout.addEventListener('click', function (e) {
