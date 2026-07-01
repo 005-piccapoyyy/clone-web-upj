@@ -30,7 +30,6 @@ const storage = multer.diskStorage({
         cb(null, 'uploads/'); // Menyimpan file ke folder uploads
     },
     filename: (req, file, cb) => {
-        // Menamai file unik berdasarkan waktu agar tidak bentrok
         cb(null, Date.now() + '-' + file.originalname);
     }
 });
@@ -48,7 +47,6 @@ app.post('/api/login', (req, res) => {
         if (err) return res.status(500).json({ error: err.message });
         
         if (result.length > 0) {
-            // SEKARANG KITA KIRIM JUGA NAMA DAN NIM_NIDN ASLINYA KE FRONTEND
             res.json({ 
                 status: 'sukses', 
                 message: 'Login Berhasil!',
@@ -88,31 +86,73 @@ app.get('/api/pengajuan/:nim', (req, res) => {
 });
 
 
-// ==================== API FITUR ADMIN (SYSTEM) ====================
+// ==================== PERBARUAN: API FITUR ADMIN ====================
 
-// A. Ambil Semua Pengajuan Masuk untuk Tabel Admin
+// KUNCI UTAMA: Ambil Semua Pengajuan Masuk untuk Tabel Admin (DENGAN LEFT JOIN)
 app.get('/api/admin/pengajuan', (req, res) => {
-    const sql = `SELECT p.*, u.nama FROM pengajuan_judul p 
-        JOIN users u ON p.nim_mahasiswa = u.nim_nidn 
-        ORDER BY p.created_at DESC`;
+    const sql = `SELECT p.*, IFNULL(u.nama, 'Mahasiswa') AS nama 
+                FROM pengajuan_judul p 
+                LEFT JOIN users u ON p.nim_mahasiswa = u.nim_nidn 
+                ORDER BY p.created_at DESC`;
     db.query(sql, (err, results) => {
         if (err) return res.status(500).json({ error: err.message });
         res.json(results);
     });
 });
 
-// B. Ubah Status Pengajuan (Setuju / Tolak)
+// Admin menyetujui pemeriksaan awal, lalu MENERUSKANNYA ke Dosen Pembimbing
 app.put('/api/admin/status-pengajuan', (req, res) => {
     const { id_pengajuan, status_baru } = req.body;
-    const sql = "UPDATE pengajuan_judul SET status = ? WHERE id = ?";
-    db.query(sql, [status_baru, id_pengajuan], (err, result) => {
+
+    if (status_baru === 'disetujui') {
+        // Status diubah menjadi 'diteruskan' (Menunggu Review Dosen), bukan langsung 'disetujui'
+        const sql = "UPDATE pengajuan_judul SET status = 'diteruskan', nidn_dosen = '04260001', status_bimbingan = 'Berjalan' WHERE id = ?";
+        db.query(sql, [id_pengajuan], (err, result) => {
+            if (err) return res.status(500).json({ error: err.message });
+            res.json({ status: 'sukses', message: 'Proposal berhasil diteruskan ke Dashboard Dosen Pembimbing!' });
+        });
+    } else {
+        // Jika ditolak oleh Admin, status langsung 'ditolak' secara final
+        const sql = "UPDATE pengajuan_judul SET status = 'ditolak' WHERE id = ?";
+        db.query(sql, [id_pengajuan], (err, result) => {
+            if (err) return res.status(500).json({ error: err.message });
+            res.json({ status: 'sukses', message: 'Proposal telah ditolak oleh Admin.' });
+        });
+    }
+});
+
+
+// ==================== PERBARUAN & BARU: API FITUR DOSEN ====================
+
+// A. Mengambil seluruh data bimbingan yang diarahkan ke dosen tertentu
+app.get('/api/dosen/bimbingan/:nidn', (req, res) => {
+    const nidn = req.params.nidn;
+    // Mengambil status agar frontend dosen tahu mana yang perlu divalidasi
+    const sql = `SELECT p.id, u.nama, p.nim_mahasiswa, p.judul, p.status, p.status_bimbingan 
+                FROM pengajuan_judul p
+                JOIN users u ON p.nim_mahasiswa = u.nim_nidn
+                WHERE p.nidn_dosen = ?`;
+                
+    db.query(sql, [nidn], (err, results) => {
         if (err) return res.status(500).json({ error: err.message });
-        res.json({ status: 'sukses', message: `Status berhasil diubah menjadi: ${status_baru}` });
+        res.json(results);
+    });
+});
+
+// B. BARU: API KEPUTUSAN FINAL DOSEN (Setuju / Tolak Judul Skripsi)
+app.put('/api/dosen/keputusan-judul', (req, res) => {
+    const { id_pengajuan, keputusan } = req.body; // keputusan bernilai: 'disetujui' atau 'ditolak'
+
+    const sql = "UPDATE pengajuan_judul SET status = ? WHERE id = ?";
+    db.query(sql, [keputusan, id_pengajuan], (err, result) => {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json({ status: 'sukses', message: `Judul Tugas Akhir berhasil ${keputusan}!` });
     });
 });
 
 
-// 3. JALANKAN SERVER
+// ==================== KUNCI UTAMA: JALANKAN SERVER (BARU) ====================
+// Menaruh port listen di bagian paling bawah agar server terus stand-by menerima request
 app.listen(3000, () => {
-    console.log('Server Backend berjalan di http://localhost:3000');
+    console.log('Server backend SITA UPJ aktif & mendengarkan di port 3000!');
 });
